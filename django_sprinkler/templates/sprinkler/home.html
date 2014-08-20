@@ -1,0 +1,31 @@
+{%extends 'sprinkler/base.html'%}
+{%block middle_col%}
+    <div class="row">
+        <div class="col-md-12 col-xs-12 col-md-12 col-lg-12">
+
+                <button id="toggle_manual_btn" class="btn">Manual</button>
+                <button id="3min_cicle_btn" class="btn" onclick="">3min cicle</button>
+                <button id="cicle_btn" class="btn" onclick="">Cicle</div>
+                <label class="pull-right" id="state"></label>
+
+        </div>
+        <div class="col-md-12 col-xs-12 col-md-12 col-lg-12"></div>
+        <div class="col-md-12 col-xs-12 col-md-12 col-lg-12">
+            <div class="row">
+                <div class="col-md-6 col-xs-6 col-md-6 col-lg-6" id="programs"></div>
+                <div class="col-md-6 col-xs-6 col-md-6 col-lg-6" id="valves"></div>
+            </div>
+        </div>
+    </div>
+
+{%endblock%}
+
+{%block script%}
+{%include 'sprinkler/sprinkler.js' %}
+{%endblock%}
+
+{%block document_ready%}
+load_context()
+window.setInterval("load_context()", 30000)
+{%endblock%}
+
