@@ -51,6 +51,8 @@ def set_state(request, new_state):
             pass
             #TODO activate manual cicle
         ctxt.state = new_state
+        if new_state == "manual":
+            ctxt.start_at = None
         ctxt.save()
 
         #resetamos todos los riegos

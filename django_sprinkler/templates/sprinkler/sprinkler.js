@@ -6,6 +6,7 @@ function load_context(){
 
 function show_context(ctxt){
     $("#state").html(ctxt.state)
+    $("#time").html(ctxt.time)
     load_programs(ctxt)
     load_valves(ctxt)
     toggle_buttons(ctxt)
@@ -65,7 +66,9 @@ function toggle_buttons(ctxt){
 
             break;
         case "running_program":
-            $("#toggle_manual_btn").prop("disable", true)
+            $("#toggle_manual_btn").html("Manual")
+            $("#toggle_manual_btn").attr("title", "Change to automatic")
+            $("#toggle_manual_btn").bind("click", function(e){e.preventDefault();set_state('automatic')})
 
             $("#cicle_btn").prop("disable", true)
             $("#3min_cicle_btn").prop("disable", true)

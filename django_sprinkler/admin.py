@@ -12,6 +12,11 @@ class ProgramAdmin(admin.ModelAdmin):
 admin.site.register(Program, ProgramAdmin)
 
 
+class ProgramStepAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(ProgramStep, ProgramStepAdmin)
+
+
 class ContextAdmin(admin.ModelAdmin):
     pass
 admin.site.register(Context, ContextAdmin)

@@ -43,7 +43,7 @@ class StartTime(models.Model):
 
     def __unicode__(self):
         return u"Every %s at %s" %(
-            self.week_day if not self.week_day is None else "day",
+            self.week_day if not self.week_day in (None, "") else "day",
             self.time,
         )
 
@@ -57,6 +57,7 @@ class Context(models.Model):
     def to_json(self):
 
         return simplejson.dumps({
+            "time": datetime.now(pytz.timezone(settings.TIME_ZONE)).strftime("%H:%M"),
             "state": self.state,
             "active_program": self.active_program.id if self.active_program is not None else None,
             "valves": [s.to_dict() for s in Sprinkler.objects.all()],
@@ -114,6 +115,10 @@ class Sprinkler(models.Model):
         if new_state is None:
             self.state = not self.state
         else:
+            if self.state == new_state:
+                logger.info("Sprinkler %s already at state: %s" % (self, self.state))
+                return
+
             self.state = new_state
         self.save()
         """
@@ -124,6 +129,8 @@ class Sprinkler(models.Model):
             API_USERNAME,
             API_PASSWORD)
         """
+        logger.info("Sprinkler %s now at state: %s" % (self, self.state))
+
 
 class ProgramStep(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
@@ -161,12 +168,12 @@ class Program(models.Model):
             pass
 
     def __unicode__(self):
-        return u"%s" % self.name
+        return u"%s; %s" % (self.name, [x.__unicode__() for x in self.starting_times.all()])
 
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
+            "name": self.__unicode__(),
         }
 
     def has_active_step(self, program_must_start_at=None, minutes=None):
@@ -177,7 +184,7 @@ class Program(models.Model):
                 start.time = start.time.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
                 logger.debug("promgram promgramed start: %s" % start.time)
                 #Is program supposed to be run today?
-                if not start.week_day is None:
+                if not start.week_day in (None, ""):
                     logger.debug("Weekday not is None")
                     days = [x.strip() for x in start.week_day.split(",")]
                     logger.debug("Days: %s, %s" % (days, now.strftime("%a")))
@@ -231,6 +238,8 @@ class Program(models.Model):
                 #step of the program, need to initialize the program_start time
                 if c.start_at is None:
                     c.start_at = program_start
+                    if c.state == "automatic":
+                        c.state = "running_program"
                     c.save()
                 logging.debug("FOUND: %s (type: %s)" % (step, type(step)))
                 return step
