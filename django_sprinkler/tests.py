@@ -51,6 +51,262 @@ class TestSprinklers(unittest.TestCase):
         stp3.save()
         p.steps.add(stp3)
 
+    def test_program_active_step_minutes(self):
+        self._create_sprinklers()
+        self._create_program()
+
+        logger.debug("******************* NO DAY ***********************")
+
+        logger.debug("#################################### Must find None: start now + 10min")
+        p = Program.objects.get()
+
+        st = StartTime(time=self._now() + timedelta(minutes=10))
+        st.save()
+
+        p.starting_times.add(st)
+
+        ret = p.has_active_step(minutes=3)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is 10 min later: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=2)
+        logger.debug("#################################### Must find aspe1: start -2min")
+        st.save()
+        ret = p.has_active_step(minutes=3)
+        self.assertEqual(ProgramStep.objects.get(sprinkler__caption="aspe1").sprinkler.caption, ret.sprinkler.caption,
+            "Not properly calculating active step.\
+           Should return stp1 as start time is 2 min ago and stp1 is 3min long: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=4)
+        logger.debug("#################################### Must find aspe2: start -4min")
+        st.save()
+
+        ret = p.has_active_step(minutes=3)
+        self.assertEqual(ProgramStep.objects.get(sprinkler__caption="aspe2").sprinkler.caption, ret.sprinkler.caption,
+           "Not properly calculating active step.\
+           Should return stp2 as start time is 4 min ago and stp2\
+            is 3min long + stp1 3min long: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=7)
+        logger.debug("#################################### Must find aspe3: start -25min")
+        st.save()
+
+        ret = p.has_active_step(minutes=3)
+        self.assertEqual(ProgramStep.objects.get(sprinkler__caption="aspe3").sprinkler.caption, ret.sprinkler.caption,
+           "Not properly calculating active step.\
+           Should return stp3 as start time is 7 min \
+           ago and stp3 is 3min long + stp2 3min long + stp1 3min long: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=2)
+        logger.debug("#################################### Must find aspe1: start -9min")
+        st.save()
+
+        ret = p.has_active_step(minutes=3)
+        self.assertEqual(ProgramStep.objects.get(sprinkler__caption="aspe1").sprinkler.caption, ret.sprinkler.caption,
+           "Not properly calculating active step.\
+           Should return stp1 as start time is 2 \
+           min ago and stp1 is 3min long: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=4)
+        logger.debug("#################################### Must find aspe2: start -11min")
+        st.save()
+
+        ret = p.has_active_step(minutes=3)
+        self.assertEqual(ProgramStep.objects.get(sprinkler__caption="aspe2").sprinkler.caption, ret.sprinkler.caption,
+           "Not properly calculating active step.\
+           Should return stp2 as start time is 4 min\
+            ago and stp1 is 3min long: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=60)
+        logger.debug("#################################### Must find None: start -60min")
+        st.save()
+
+        ret = p.has_active_step(minutes=3)
+        self.assertIsNone(ret,
+           "Not properly calculating active step.\
+           Should return None as start time is 60 min\
+            and program only lasts for 30min")
+
+    def test_program_active_step_one_hour_ago(self):
+        self._create_sprinklers()
+        self._create_program()
+
+        startt = self._now()-timedelta(hours=1)
+
+        logger.debug("******************* NO DAY ***********************")
+
+        logger.debug("#################################### Must find None: start now + 10min")
+        p = Program.objects.get()
+
+        st = StartTime(time=self._now() + timedelta(minutes=10))
+        st.save()
+
+        p.starting_times.add(st)
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour ago: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=2)
+        logger.debug("#################################### Must find aspe1: start -2min")
+        st.save()
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour ago: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=4)
+        logger.debug("#################################### Must find aspe2: start -4min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour ago: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=7)
+        logger.debug("#################################### Must find aspe3: start -25min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour ago: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=2)
+        logger.debug("#################################### Must find aspe1: start -9min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour ago: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=4)
+        logger.debug("#################################### Must find aspe2: start -11min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour ago: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=60)
+        logger.debug("#################################### Must find None: start -60min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour ago: %s" % ret)
+
+    def test_program_active_step_one_hour_later(self):
+        self._create_sprinklers()
+        self._create_program()
+
+        startt = self._now()+timedelta(hours=1)
+
+        logger.debug("******************* NO DAY ***********************")
+
+        logger.debug("#################################### Must find None: start now + 10min")
+        p = Program.objects.get()
+
+        st = StartTime(time=self._now() + timedelta(minutes=10))
+        st.save()
+
+        p.starting_times.add(st)
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour later: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=2)
+        logger.debug("#################################### Must find aspe1: start -2min")
+        st.save()
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour later: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=4)
+        logger.debug("#################################### Must find aspe2: start -4min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour later: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=7)
+        logger.debug("#################################### Must find aspe3: start -25min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour later: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=2)
+        logger.debug("#################################### Must find aspe1: start -9min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour later: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=4)
+        logger.debug("#################################### Must find aspe2: start -11min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour later: %s" % ret)
+
+        st.time = self._now() - timedelta(minutes=60)
+        logger.debug("#################################### Must find None: start -60min")
+        st.save()
+
+        ret = p.has_active_step(program_must_start_at=startt)
+        self.assertIsNone(
+            ret,
+            "Not properly calculating active step.\
+            Should return None active step as the starting time of the program\
+            is one hour later: %s" % ret)
+
+
     def test_program_active_step_without_days(self):
         self._create_sprinklers()
         self._create_program()
@@ -286,6 +542,7 @@ class TestSprinklers(unittest.TestCase):
             ret,
             "Not properly calculating active step.\
             Should return None active step as days is tomorrow")
+
 
     def test_program_active_step_yesterday(self):
         self._create_sprinklers()
