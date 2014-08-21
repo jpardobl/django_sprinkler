@@ -72,6 +72,7 @@ class Sprinkler(models.Model):
     state = models.BooleanField(default=False)
     api_host = models.CharField(max_length=200, default=API_HOST)
 
+
     def __unicode__(self):
         return u"%s - %s" % (self.did, self.caption)
 
