@@ -15,7 +15,7 @@ def exec_step(ctxt, step=None):
         #No hay mas pasos en el programa,
         #si venimos de running_program lo dejamos como automatic
         #si venimos de otro estado, volvemos a manual
-        ctxt.state = 'automatic' if ctxt.state == 'running_program' else 'manual'
+        ctxt.state = 'automatic' if ctxt.state in ('running_program', 'automatic') else 'manual'
         logger_watering.info("Changing state to %s" % ctxt.state)
         ctxt.save()
 
