@@ -53,6 +53,7 @@ class Context(models.Model):
     state = models.CharField(max_length=50, choices=STATE_CHOICES, default='manual')
     active_program = models.ForeignKey("Program", null=True, blank=True)
     start_at = models.DateTimeField(null=True, blank=True)
+    simulation = models.BooleanField(default=True)
 
     def to_json(self):
 
@@ -69,9 +70,11 @@ class Sprinkler(models.Model):
     did = models.IntegerField()
     caption = models.CharField(max_length=100)
     state = models.BooleanField(default=False)
+    api_host = models.CharField(max_length=200, default=API_HOST)
 
     def __unicode__(self):
         return u"%s - %s" % (self.did, self.caption)
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -82,31 +85,31 @@ class Sprinkler(models.Model):
 
     def save(self):
         try:
-            """
-            if self.pk is None:
+
+            if self.pk is None and not Context.objects.get_context().simulation:
                 add_device(
                     "GPIO",
                     self.did,
                     "sprinkler_%s" % self.did,
                     "switch",
-                    API_HOST,
+                    self.api_host,
                     API_USERNAME,
                     API_PASSWORD)
-            """
+
         except RestApiException as er:
             logger.debug("Error creating sprinkler into API server, %s" % er)
         super(Sprinkler, self).save()
 
     def delete(self):
         try:
-            """
-            del_device(
-                "GPIO",
-                self.did,
-                API_HOST,
-                API_USERNAME,
-                API_PASSWORD)
-            """
+            if not Context.objects.get_context().simulation:
+                del_device(
+                    "GPIO",
+                    self.did,
+                    self.api_host,
+                    API_USERNAME,
+                    API_PASSWORD)
+
         except RestApiException as er:
             logger.debug("Error deleting sprinkler into API server, %s" % er)
         super(Sprinkler, self).delete()
@@ -121,14 +124,14 @@ class Sprinkler(models.Model):
 
             self.state = new_state
         self.save()
-        """
-        pl_switch("GPIO",
-            self.did,
-            "on" if self.state else "off",
-            API_HOST,
-            API_USERNAME,
-            API_PASSWORD)
-        """
+        if not Context.objects.get_context().simulation:
+            pl_switch("GPIO",
+                self.did,
+                "on" if self.state else "off",
+                self.api_host,
+                API_USERNAME,
+                API_PASSWORD)
+
         logger.info("Sprinkler %s now at state: %s" % (self, self.state))
 
 
