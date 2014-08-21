@@ -116,6 +116,7 @@ class Sprinkler(models.Model):
         super(Sprinkler, self).delete()
 
     def toggle(self, new_state=None):
+        sim = Context.objects.get_context().simulation
         if new_state is None:
             self.state = not self.state
         else:
@@ -125,7 +126,7 @@ class Sprinkler(models.Model):
 
             self.state = new_state
         self.save()
-        if not Context.objects.get_context().simulation:
+        if not sim:
             pl_switch("GPIO",
                 self.did,
                 "on" if self.state else "off",
@@ -133,7 +134,7 @@ class Sprinkler(models.Model):
                 API_USERNAME,
                 API_PASSWORD)
 
-        logger.info("Sprinkler %s now at state: %s" % (self, self.state))
+        logger.info("Sprinkler %s now at state: %s (simulation: %s)" % (self, self.state, sim))
 
 
 class ProgramStep(models.Model):
