@@ -10,8 +10,11 @@ from time import strptime, strftime, mktime
 from django.utils import timezone
 
 
-logger = logging.getLogger("django_sprinkler")
-logger.setLevel(LOG_LEVEL)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+
+logger_watering = logging.getLogger("watering")
+logger_watering.setLevel(logger.level)
 
 
 STATE_CHOICES = (
@@ -121,7 +124,7 @@ class Sprinkler(models.Model):
             self.state = not self.state
         else:
             if self.state == new_state:
-                logger.info("Sprinkler %s already at state: %s" % (self, self.state))
+                logger_watering.info("Sprinkler %s already at state: %s" % (self, self.state))
                 return
 
             self.state = new_state
@@ -134,7 +137,7 @@ class Sprinkler(models.Model):
                 API_USERNAME,
                 API_PASSWORD)
 
-        logger.info("Sprinkler %s now at state: %s (simulation: %s)" % (self, self.state, sim))
+        logger_watering.info("Sprinkler %s now at state: %s (simulation: %s)" % (self, self.state, sim))
 
 
 class ProgramStep(models.Model):
@@ -187,12 +190,12 @@ class Program(models.Model):
             #Use program starting time to check active steps
             for start in self.starting_times.all():
                 start.time = start.time.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
-                logger.debug("promgram promgramed start: %s" % start.time)
+                logger_watering.debug("promgram promgramed start: %s" % start.time)
                 #Is program supposed to be run today?
                 if not start.week_day in (None, ""):
-                    logger.debug("Weekday not is None")
+                    logger_watering.debug("Weekday not is None")
                     days = [x.strip() for x in start.week_day.split(",")]
-                    logger.debug("Days: %s, %s" % (days, now.strftime("%a")))
+                    logger_watering.debug("Days: %s, %s" % (days, now.strftime("%a")))
                     if len(days) and not now.strftime("%a") in days:
                         logger.debug("No watering for today")
                         continue
@@ -204,7 +207,7 @@ class Program(models.Model):
             #    program_start += timedelta(hours=start.time.hour, minutes=start.time.minute)
            #     logger.debug("program_start: %s after adding: %s hours" % (program_start, start.time.hour))
            #     program_start += timedelta(minutes=start.time.minute)
-                logger.debug("program_start: %s" % program_start)
+                logger_watering.debug("program_start: %s" % program_start)
 
                 return self.active_step(
                     program_start,
@@ -225,18 +228,19 @@ class Program(models.Model):
         #length of time adding the duration of each step
         length = 0
         for step in self.steps.all():
-            logging.debug("Working with step: %s" % step)
+            logger_watering.debug("Working with step: %s" % step)
             #Use minutes passed if not None, else we use program minutes
             length += step.minutes if minutes is None else minutes
             step_end = program_start + timedelta(minutes=length)
            # logger.info("%s - %s - %s" % (timezone.is_naive(program_start), timezone.is_naive(now), timezone.is_naive(step_end)))
-            logging.debug("%s < %s < %s" % (program_start, now, step_end))
+            logger_watering.debug("%s < %s < %s" % (program_start, now, step_end))
             #logger.info("%s < %s < %s ???" % (program_start.tzinfo, now.tzinfo, step_end.tzinfo))
 
-            if program_start < now:
-                logger.debug("program_start < now")
-            if now < step_end:
-                logger.debug("now < step_end")
+            if settings.DEBUG:
+                if program_start < now:
+                    logger_watering.debug("program_start < now")
+                if now < step_end:
+                    logger_watering.debug("now < step_end")
 
             if program_start < now < step_end:
                 #if Context.program_start is None means this is the first
@@ -244,15 +248,16 @@ class Program(models.Model):
                 if c.start_at is None:
                     c.start_at = program_start
                     if c.state == "automatic":
+                        logger_watering.info("Changing state Automatic -> running_program")
                         c.state = "running_program"
                     c.save()
-                logging.debug("FOUND: %s (type: %s)" % (step, type(step)))
+                logger_watering.debug("FOUND: %s (type: %s)" % (step, type(step)))
                 return step
         #unset the Context.program_start as the program has no step left
 
         c.start_at = None
         c.save()
-        logging.debug("NO STEP FOUND")
+        logger_watering.debug("NO STEP FOUND")
         return None
 
 

@@ -6,8 +6,11 @@ from django_sprinkler.settings import *
 import logging
 
 
-logger = logging.getLogger("views")
-logger.setLevel(LOG_LEVEL)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+
+logger_watering = logging.getLogger("watering")
+logger_watering.setLevel(logger.level)
 
 
 def get_context(request):
@@ -37,6 +40,7 @@ def activate_program(request, program_id):
         ctxt = Context.objects.get_or_create(state='manual')[0]
         ctxt.active_program = program
         ctxt.save()
+        logger_watering.info("Changing active program to: %s" % program)
         return get_context(request)
     except Exception as et:
         logger.error("Error at activate_program: %s" % et)
@@ -57,7 +61,7 @@ def set_state(request, new_state):
 
         #resetamos todos los riegos
         [s.toggle(False) for s in Sprinkler.objects.all()]
-
+        logger_watering.info("Changing state to %s" % ctxt.state)
         return get_context(request)
     except Exception as et:
         logger.error("Error at set_state: %s" % et)

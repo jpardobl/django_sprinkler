@@ -6,6 +6,9 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
 
+logger_watering = logging.getLogger("watering")
+logger_watering.setLevel(logger.level)
+
 
 def exec_step(ctxt, step=None):
     if step is None:
@@ -13,6 +16,7 @@ def exec_step(ctxt, step=None):
         #si venimos de running_program lo dejamos como automatic
         #si venimos de otro estado, volvemos a manual
         ctxt.state = 'automatic' if ctxt.state == 'running_program' else 'manual'
+        logger_watering.info("Changing state to %s" % ctxt.state)
         ctxt.save()
 
     for pstep in ctxt.active_program.steps.all():
@@ -30,7 +34,7 @@ def run():
     #check state
 
     if ctxt.state == 'manual':
-        logger.info("State is Manual, thus not acting")
+        logger_watering.info("State is Manual, thus not acting")
         return exec_step(ctxt, None)
 
     program = ctxt.active_program
