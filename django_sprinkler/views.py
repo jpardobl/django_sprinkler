@@ -4,6 +4,7 @@ from django_sprinkler.models import Context, Sprinkler, Program
 from django.http import HttpResponse, HttpResponseServerError
 from django_sprinkler.settings import *
 import logging
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
