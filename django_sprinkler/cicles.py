@@ -34,8 +34,9 @@ def run():
     #check state
 
     if ctxt.state == 'manual':
+        exec_step(ctxt, None)
         logger_watering.info("State is Manual, thus not acting")
-        return exec_step(ctxt, None)
+        return
 
     program = ctxt.active_program
 
