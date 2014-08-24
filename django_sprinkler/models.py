@@ -60,11 +60,15 @@ class Context(models.Model):
 
     def to_json(self):
 
+        valves = [[s.to_dict(), None] for s in Sprinkler.objects.all()] \
+            if self.active_program is None else \
+                [[s.sprinkler.to_dict(), s.minutes] for s in self.active_program.steps.all()]
+
         return simplejson.dumps({
             "time": datetime.now(pytz.timezone(settings.TIME_ZONE)).strftime("%H:%M"),
             "state": self.state,
             "active_program": self.active_program.id if self.active_program is not None else None,
-            "valves": [s.to_dict() for s in Sprinkler.objects.all()],
+            "valves": valves,
             "programs": [p.to_dict() for p in Program.objects.all()],
         })
 
