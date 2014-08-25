@@ -35,14 +35,23 @@ function toggle_buttons(ctxt){
             $("#toggle_manual_btn").attr("title", "Change to automatic")
             $("#toggle_manual_btn").bind("click", function(e){e.preventDefault();set_state('automatic')})
 
+
             $(".program").bind("click", function(){activate_program(this)})
             $(".valve > a").bind("click", function(){toggle_valve(this)})
+
 
             $("#3min_cicle_btn").prop("disable", false)
             $("#3min_cicle_btn").bind("click", function(){set_state('3min_cicle')})
 
+
             $("#cicle_btn").prop("disable", false)
             $("#cicle_btn").bind("click", function(){set_state('cicle')})
+
+            $("#toggle_manual_btn").css("cursor", "pointer")
+            $(".program").css("cursor", "pointer")
+            $("#cicle_btn").css("cursor", "pointer")
+            $("#3min_cicle_btn").css("cursor", "pointer")
+            $(".valve > a").css("cursor", "pointer")
             break;
         case "automatic":
             $("#toggle_manual_btn").html("Automatic")
@@ -52,6 +61,11 @@ function toggle_buttons(ctxt){
             $("#cicle_btn").prop("disable", true)
             $("#3min_cicle_btn").prop("disable", true)
 
+            $("#toggle_manual_btn").css("cursor", "pointer")
+            $(".program").css("cursor", "default")
+            $("#cicle_btn").css("cursor", "default")
+            $("#3min_cicle_btn").css("cursor", "default")
+            $(".valve > a").css("cursor", "default")
             break;
         case "3min_cicle":
             $("#toggle_manual_btn").prop("disable", true)
@@ -60,6 +74,12 @@ function toggle_buttons(ctxt){
             $("#3min_cicle_btn").html("Stop 3min cicle")
             $("#3min_cicle_btn").bind("click", function(){set_state("manual")})
             $("#3min_cicle_btn").prop("disable", false)
+
+            $("#toggle_manual_btn").css("cursor", "default")
+            $(".program").css("cursor", "default")
+            $("#cicle_btn").css("cursor", "default")
+            $("#3min_cicle_btn").css("cursor", "pointer")
+            $(".valve > a").css("cursor", "default")
             break;
         case "cicle":
             $("#toggle_manual_btn").prop("disable", true)
@@ -68,6 +88,11 @@ function toggle_buttons(ctxt){
             $("#cicle_btn").bind("click", function(){set_state("manual")})
             $("#3min_cicle_btn").prop("disable", true)
 
+            $("#toggle_manual_btn").css("cursor", "default")
+            $(".program").css("cursor", "default")
+            $("#cicle_btn").css("cursor", "pointer")
+            $("#3min_cicle_btn").css("cursor", "default")
+            $(".valve > a").css("cursor", "default")
             break;
         case "running_program":
             $("#toggle_manual_btn").html("Manual")
@@ -77,6 +102,11 @@ function toggle_buttons(ctxt){
             $("#cicle_btn").prop("disable", true)
             $("#3min_cicle_btn").prop("disable", true)
 
+            $("#toggle_manual_btn").css("cursor", "pointer")
+            $(".program").css("cursor", "default")
+            $("#cicle_btn").css("cursor", "default")
+            $("#3min_cicle_btn").css("cursor", "default")
+            $(".valve > a").css("cursor", "default")
             break;
     }
 
