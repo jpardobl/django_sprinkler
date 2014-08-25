@@ -117,7 +117,7 @@ function load_valves(ctxt){
             if(v[0].state)
                 c = "success"
             var n = v[0].caption
-            if(v[1] != null) n = v[0].caption + " - " + v[1]
+            if(v[1] != null) n = v[0].caption + " - " + v[1] + "min"
 
             $("#valves").append("<li class='valve list-group-item'><a href='javascript:void(0)' i='"+ v[0].id+"' class='label label-"+c+"'>" + n + "</a></li>")
             delete n,c;

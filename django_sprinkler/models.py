@@ -185,7 +185,7 @@ class Program(models.Model):
         sts = u"%s" % self.name
         for x in self.starting_times.all():
             sts = u"%s;%s" % (x, sts)
-        return u"%s; %s" % (self.name, x)
+        return u" %s; %s" % (self.name, x)
 
     def to_dict(self):
         return {
