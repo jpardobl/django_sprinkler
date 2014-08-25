@@ -184,8 +184,8 @@ class Program(models.Model):
     def __unicode__(self):
         sts = u"%s" % self.name
         for x in self.starting_times.all():
-            sts = u"%s;%s" % (x, sts)
-        return u" %s; %s" % (self.name, x)
+            sts = u"%s;%s" % (sts, x)
+        return sts
 
     def to_dict(self):
         return {
