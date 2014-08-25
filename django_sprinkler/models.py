@@ -59,16 +59,18 @@ class Context(models.Model):
     simulation = models.BooleanField(default=True)
 
     def to_json(self):
+        if self.active_program is None:
+            valves = [[s.to_dict(), None] for s in Sprinkler.objects.all()]
+        else:
+            valves = [[s.sprinkler.to_dict(), s.minutes] for s in self.active_program.steps.all()]
 
-        valves = [[s.to_dict(), None] for s in Sprinkler.objects.all()] \
-            if self.active_program is None else \
-                [[s.sprinkler.to_dict(), s.minutes] for s in self.active_program.steps.all()]
 
         return simplejson.dumps({
             "time": datetime.now(pytz.timezone(settings.TIME_ZONE)).strftime("%H:%M"),
             "state": self.state,
             "active_program": self.active_program.id if self.active_program is not None else None,
             "valves": valves,
+            "simulation": self.simulation,
             "programs": [p.to_dict() for p in Program.objects.all()],
         })
 
@@ -180,12 +182,15 @@ class Program(models.Model):
             pass
 
     def __unicode__(self):
-        return u"%s; %s" % (self.name, [x.__unicode__() for x in self.starting_times.all()])
+        sts = u"%s" % self.name
+        for x in self.starting_times.all():
+            sts = u"%s;%s" % (x, sts)
+        return u"%s; %s" % (self.name, x)
 
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.__unicode__(),
+            "name": u"%s" % self,
         }
 
     def has_active_step(self, program_must_start_at=None, minutes=None):

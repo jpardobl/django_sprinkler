@@ -7,6 +7,10 @@ function load_context(){
 function show_context(ctxt){
     $("#state").html(ctxt.state)
     $("#time").html(ctxt.time)
+    if(ctxt.simulation)
+        $("#simulation").html(ctxt.simulation)
+    else
+        $("#simulation").remove()
     load_programs(ctxt)
     load_valves(ctxt)
     toggle_buttons(ctxt)
@@ -89,8 +93,9 @@ function load_programs(ctxt){
     $(programs).addClass("list-group")
     $.each(ctxt.programs,
         function(k, v){
+            v.name = v.name.replace(/;/, "<br>")
             $("#programs").append("<li class='list-group-item'><a i='"+ v.id+"' class='program label label-default' href='javascript:void(0)'>" + v.name+ "</a></li>")
-            //console.log(v)
+
         })
     delete programs;
     console.log(ctxt.active_program)
@@ -109,10 +114,13 @@ function load_valves(ctxt){
     $.each(ctxt.valves,
         function(k, v){
             var c = "default"
-            if(v.state)
+            if(v[0].state)
                 c = "success"
-            $("#valves").append("<li class='valve list-group-item'><a href='javascript:void(0)' i='"+ v.id+"' class='label label-"+c+"'>" + v.caption+ "</a></li>")
-            //console.log(v)
+            var n = "-"
+            if(v[1] != null) n = v[1]
+
+            $("#valves").append("<li class='valve list-group-item'><a href='javascript:void(0)' i='"+ v[0].id+"' class='label label-"+c+"'>" + n + "</a></li>")
+            delete n,c;
         })
     delete valves;
 }
