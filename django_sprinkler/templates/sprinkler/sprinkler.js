@@ -93,7 +93,7 @@ function load_programs(ctxt){
     $(programs).addClass("list-group")
     $.each(ctxt.programs,
         function(k, v){
-            v.name = v.name.replace(/;/, " <br>")
+            v.name = v.name.replace(/;/g, " <br>")
             $("#programs").append("<li class='list-group-item'><a i='"+ v.id+"' class='program label label-default' href='javascript:void(0)'>" + v.name+ "</a></li>")
 
         })
