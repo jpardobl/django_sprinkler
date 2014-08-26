@@ -14,6 +14,15 @@ logger_watering = logging.getLogger("watering")
 logger_watering.setLevel(logger.level)
 
 
+def watering_logs(request):
+    f = open(settings.LOGGING["handlers"]["watering"], "r")
+
+    return render_to_response(
+        "sprinkler/log.html",
+        {"log": f.readlines()}
+    )
+
+
 def get_context(request):
     ctxt = Context.objects.get_context()
 
