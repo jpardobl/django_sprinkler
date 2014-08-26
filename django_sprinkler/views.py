@@ -15,8 +15,8 @@ logger_watering.setLevel(logger.level)
 
 
 def watering_logs(request):
-    print settings.LOGGING["handlers"]["watering"]
-    f = open(settings.LOGGING["handlers"]["watering"], "r")
+    #print settings.LOGGING["handlers"]["watering"]
+    f = open(settings.LOGGING["handlers"]["watering"]["filename"], "r")
 
     return render_to_response(
         "sprinkler/log.html",
