@@ -1,7 +1,9 @@
 {%extends 'sprinkler/base.html'%}
 {%block middle_col%}
 
-{{log|linebreaksbr}}
+{% for l in log %}
+  {{l|linebreaksbr}}
+{% endfor %}
 {%endblock%}
 
 {%block script%}
