@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from django_sprinkler.settings import *
 import logging, simplejson
 from django.conf import settings
+from django_sprinkler.cicles import run
 
 
 logger = logging.getLogger(__name__)
@@ -68,8 +69,7 @@ def set_state(request, new_state):
         #print "new_state: %s" % new_state
         ctxt = Context.objects.get_context()
         if new_state in ("3min_cicle", "cicle"):
-            pass
-            #TODO activate manual cicle
+           run()
         ctxt.state = new_state
         if new_state == "manual":
             ctxt.start_at = None
