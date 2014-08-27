@@ -195,6 +195,7 @@ class Program(models.Model):
 
     def has_active_step(self, program_must_start_at=None, minutes=None):
         now = datetime.now(pytz.timezone(settings.TIME_ZONE))
+        logger_watering.debug("program_must_start_at: %s; minutes: %s" %(program_must_start_at, minutes))
         if program_must_start_at is None:
             #Use program starting time to check active steps
             for start in self.starting_times.all():

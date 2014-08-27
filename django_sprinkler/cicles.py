@@ -43,12 +43,22 @@ def run():
     if ctxt.state in ('automatic', 'running_program'):
         return exec_step(ctxt, program.has_active_step())
     if ctxt.state == '3min_cicle':
+
+        startt = datetime.now(pytz.timezone(settings.TIME_ZONE)) \
+            if ctxt.start_at is None \
+            else ctxt.stat_at
+
         return exec_step(ctxt, program.has_active_step(
-            program_must_start_at=datetime.now(pytz.timezone(settings.TIME_ZONE)),
-            minutes=3))
+            program_must_start_at=startt),
+            minutes=3)
+
     if ctxt.state == 'cicle':
+        startt = datetime.now(pytz.timezone(settings.TIME_ZONE)) \
+            if ctxt.start_at is None \
+            else ctxt.stat_at
+
         return exec_step(ctxt, program.has_active_step(
-            program_must_start_at=datetime.now(pytz.timezone(settings.TIME_ZONE))))
+            program_must_start_at=startt))
 
 
 
