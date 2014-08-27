@@ -11,15 +11,15 @@
   <body>
 {%include 'sprinkler/header.html'%}
     <div class="row">
-        <div class="col-md-4 col-sm-4 col-xs-2" id="left_col">
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-2" id="left_col">
           {%if messages%}
             <div id="avisos">
                {%block avisos%}{%endblock%}
             </div>
           {%endif%}
         </div>
-        <div class="col-md-4 col-sm-4 col-xs-9" id="middle_col">{%block middle_col %}{%endblock%}</div>
-        <div class="col-md-4 col-sm-4 col-xs-1" id="right_col_father"><div class="row">{%block right_col%}{%endblock%}</div></div>
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-9" id="middle_col">{%block middle_col %}{%endblock%}</div>
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-1" id="right_col"><div class="row">{%block right_col%}{%endblock%}</div></div>
     </div>
     <script src="/static/js/jquery-1.10.2.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
