@@ -4,6 +4,7 @@ from django_sprinkler.models import Context, Sprinkler, Program
 from django.http import HttpResponse, HttpResponseServerError
 from django_sprinkler.settings import *
 import logging, simplejson
+from time import strptime
 from django.conf import settings
 from django_sprinkler.cicles import run
 
@@ -21,7 +22,11 @@ def watering_logs(request):
 
     lines = []
     for line in f.readlines():
-        lines.append(line.split(";;", line.count(";;")))
+        linea = line.split(";;", line.count(";;"))
+        #2014-08-27 12:02:04,889
+        t = strptime(linea[1], "%Y-%m-%d %H:%M:%S")
+        lines.append(linea.append(int(t.tm_min) % 2))
+
 
     return render_to_response(
         "sprinkler/log.html",
