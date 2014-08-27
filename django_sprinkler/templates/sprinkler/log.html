@@ -3,7 +3,7 @@
 
         <ul>
         {% for l in log %}
-          <li class="text-{% if l.level == 'DEBUG' %}warning{% else %}default{% endif %}">{{l.time}}: {{l.msg}}</li>
+          <li class="text-{% if l.0 == 'DEBUG' %}warning{% else %}default{% endif %}">{{l.1}}: {{l.3}}</li>
         {% endfor %}
         </ul>
 {%endblock%}

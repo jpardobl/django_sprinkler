@@ -18,7 +18,9 @@ def watering_logs(request):
     #print settings.LOGGING["handlers"]["watering"]
     f = open(settings.LOGGING["handlers"]["watering"]["filename"], "r")
 
-    lines = simplejson.loads(f.readlines())
+    for line in f.readlines():
+        lines = line.split(";;")
+
     return render_to_response(
         "sprinkler/log.html",
         {"log": lines}
