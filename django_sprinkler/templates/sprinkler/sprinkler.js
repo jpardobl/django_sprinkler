@@ -71,10 +71,8 @@ function toggle_buttons(ctxt){
 
 
             $("#toggle_manual_btn").removeClass("hidden")
-            $(".program").addClass("hidden")
             $("#cicle_btn").addClass("hidden")
             $("#3min_cicle_btn").addClass("hidden")
-            $(".valve > a").addClass("hidden")
 
             break;
         case "3min_cicle":
