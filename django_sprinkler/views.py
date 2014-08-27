@@ -25,7 +25,7 @@ def watering_logs(request):
 
     return render_to_response(
         "sprinkler/log.html",
-        {"log": lines}
+        {"log": reversed(lines)}
     )
 
 
