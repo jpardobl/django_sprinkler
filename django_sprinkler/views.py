@@ -68,8 +68,7 @@ def set_state(request, new_state):
     try:
         #print "new_state: %s" % new_state
         ctxt = Context.objects.get_context()
-        if new_state in ("3min_cicle", "cicle"):
-           run()
+
         ctxt.state = new_state
         if new_state == "manual":
             ctxt.start_at = None
@@ -78,6 +77,9 @@ def set_state(request, new_state):
         #resetamos todos los riegos
         [s.toggle(False) for s in Sprinkler.objects.all()]
         logger_watering.info("Changing state to %s" % ctxt.state)
+        if new_state in ("3min_cicle", "cicle"):
+            logger_watering.info("Launching the cicle: %s" % new_state)
+            run()
         return get_context(request)
     except Exception as et:
         logger.error("Error at set_state: %s" % et)
