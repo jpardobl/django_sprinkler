@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django_sprinkler.models import Context, Sprinkler, Program
 from django.http import HttpResponse, HttpResponseServerError
 from django_sprinkler.settings import *
-import logging
+import logging, simplejson
 from django.conf import settings
 
 
@@ -18,9 +18,10 @@ def watering_logs(request):
     #print settings.LOGGING["handlers"]["watering"]
     f = open(settings.LOGGING["handlers"]["watering"]["filename"], "r")
 
+    lines = simplejson.loads(f.readlines())
     return render_to_response(
         "sprinkler/log.html",
-        {"log": f.readlines()}
+        {"log": lines}
     )
 
 

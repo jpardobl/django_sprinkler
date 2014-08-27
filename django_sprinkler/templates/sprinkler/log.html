@@ -1,9 +1,11 @@
 {%extends 'sprinkler/base.html'%}
 {%block middle_col%}
 
-{% for l in log %}
-  {{l|linebreaksbr}}
-{% endfor %}
+        <ul>
+        {% for l in log %}
+          <li class="text-{% if l.level == 'DEBUG' %}warning{% else %}default{% endif %}">{{l.time}}: {{l.msg}}</li>
+        {% endfor %}
+        </ul>
 {%endblock%}
 
 {%block script%}
