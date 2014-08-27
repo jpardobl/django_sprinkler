@@ -49,8 +49,7 @@ def run():
             else ctxt.start_at
 
         return exec_step(ctxt, program.has_active_step(
-            program_must_start_at=startt),
-            minutes=3)
+            program_must_start_at=startt, minutes=3))
 
     if ctxt.state == 'cicle':
         startt = datetime.now(pytz.timezone(settings.TIME_ZONE)) \
