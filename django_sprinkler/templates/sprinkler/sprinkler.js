@@ -52,6 +52,10 @@ function toggle_buttons(ctxt){
             $("#cicle_btn").css("cursor", "pointer")
             $("#3min_cicle_btn").css("cursor", "pointer")
             $(".valve > a").css("cursor", "pointer")
+
+            $("#toggle_manual_btn").removeClass("hidden")
+            $("#cicle_btn").removeClass("hidden")
+            $("#3min_cicle_btn").removeClass("hidden")
             break;
         case "automatic":
             $("#toggle_manual_btn").html("Automatic")
@@ -62,10 +66,16 @@ function toggle_buttons(ctxt){
             $("#3min_cicle_btn").prop("disable", true)
 
             $("#toggle_manual_btn").css("cursor", "pointer")
-            $(".program").css("cursor", "default")
             $("#cicle_btn").css("cursor", "default")
             $("#3min_cicle_btn").css("cursor", "default")
-            $(".valve > a").css("cursor", "default")
+
+
+            $("#toggle_manual_btn").removeClass("hidden")
+            $(".program").addClass("hidden")
+            $("#cicle_btn").addClass("hidden")
+            $("#3min_cicle_btn").addClass("hidden")
+            $(".valve > a").addClass("hidden")
+
             break;
         case "3min_cicle":
             $("#toggle_manual_btn").prop("disable", true)
@@ -80,6 +90,12 @@ function toggle_buttons(ctxt){
             $("#cicle_btn").css("cursor", "default")
             $("#3min_cicle_btn").css("cursor", "pointer")
             $(".valve > a").css("cursor", "default")
+
+            $("#toggle_manual_btn").addClass("hidden")
+            $("#cicle_btn").addClass("hidden")
+            $("#3min_cicle_btn").removeClass("hidden")
+
+
             break;
         case "cicle":
             $("#toggle_manual_btn").prop("disable", true)
@@ -93,6 +109,12 @@ function toggle_buttons(ctxt){
             $("#cicle_btn").css("cursor", "pointer")
             $("#3min_cicle_btn").css("cursor", "default")
             $(".valve > a").css("cursor", "default")
+
+            $("#toggle_manual_btn").addClass("hidden")
+            $("#cicle_btn").removeClass("hidden")
+            $("#3min_cicle_btn").addClass("hidden")
+
+
             break;
         case "running_program":
             $("#toggle_manual_btn").html("Manual")
@@ -103,10 +125,14 @@ function toggle_buttons(ctxt){
             $("#3min_cicle_btn").prop("disable", true)
 
             $("#toggle_manual_btn").css("cursor", "pointer")
-            $(".program").css("cursor", "default")
             $("#cicle_btn").css("cursor", "default")
             $("#3min_cicle_btn").css("cursor", "default")
-            $(".valve > a").css("cursor", "default")
+
+
+            $("#toggle_manual_btn").removeClass("hidden")
+            $("#cicle_btn").addClass("hidden")
+            $("#3min_cicle_btn").addClass("hidden")
+
             break;
     }
 
