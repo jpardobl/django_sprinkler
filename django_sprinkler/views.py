@@ -18,13 +18,15 @@ def watering_logs(request):
     #print settings.LOGGING["handlers"]["watering"]
     f = open(settings.LOGGING["handlers"]["watering"]["filename"], "r")
 
+    lines = []
     for line in f.readlines():
-        lines = line.split(";;")
+        lines.append(line.split(";;", line.count(";;")))
 
     return render_to_response(
         "sprinkler/log.html",
         {"log": lines}
     )
+
 
 
 def get_context(request):
