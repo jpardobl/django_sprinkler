@@ -26,7 +26,10 @@ def watering_logs(request):
         #2014-08-27 12:02:04,889
         t = strptime(linea[1][:-4], "%Y-%m-%d %H:%M:%S")
 
-        lines.append(linea.append(int(t.tm_min) % 2))
+        mod = int(t.tm_min) % 2
+        linea.append(mod)
+        lines.append(linea)
+
 
 
     return render_to_response(

@@ -8,7 +8,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name = 'django_sprinkler',
-    version = '0.2.1',
+    version = '0.3',
     packages = ["django_sprinkler", ],
     include_package_data = True,
     license = 'BSD License',

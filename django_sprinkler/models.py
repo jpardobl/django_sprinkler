@@ -103,8 +103,8 @@ class Sprinkler(models.Model):
                     "sprinkler_%s" % self.did,
                     "switch",
                     self.api_host,
-                    settings.API_USERNAME,
-                    API_PASSWORD)
+                    settings.HA_USERNAME,
+                    settings.HA_PASSWORD)
 
         except RestApiException as er:
             logger.debug("Error creating sprinkler into API server, %s" % er)
@@ -117,8 +117,8 @@ class Sprinkler(models.Model):
                     "GPIO",
                     self.did,
                     self.api_host,
-                    API_USERNAME,
-                    API_PASSWORD)
+                    settings.HA_USERNAME,
+                    settings.HA_PASSWORD)
 
         except RestApiException as er:
             logger.debug("Error deleting sprinkler into API server, %s" % er)
@@ -134,17 +134,17 @@ class Sprinkler(models.Model):
                 return
 
             self.state = new_state
-        self.save()
+
         if not sim:
             pl_switch("GPIO",
                 self.did,
                 "on" if self.state else "off",
                 self.api_host,
-                API_USERNAME,
-                API_PASSWORD)
+                settings.HA_USERNAME,
+                settings.HA_PASSWORD)
 
         logger_watering.info("Sprinkler %s now at state: %s (simulation: %s)" % (self, self.state, sim))
-
+        self.save()
 
 class ProgramStep(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
