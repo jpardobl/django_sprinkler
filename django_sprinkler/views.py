@@ -25,6 +25,7 @@ def watering_logs(request):
         linea = line.split(";;", line.count(";;"))
         #2014-08-27 12:02:04,889
         t = strptime(linea[1][:-4], "%Y-%m-%d %H:%M:%S")
+
         lines.append(linea.append(int(t.tm_min) % 2))
 
 

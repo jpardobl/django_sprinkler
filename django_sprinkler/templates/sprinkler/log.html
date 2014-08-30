@@ -3,9 +3,12 @@
 
         <ul class="list-unstyled">
         {% for l in log %}
-          <li class="text-{% if l.0 == 'DEBUG' %}warning{% else %}default{% endif %}">{{l.1}}: {{l.3}}</li>
+          <li class="text-{% if l.4 %}info{% else %}warning{% endif %}">
+                {% if l.0 != 'DEBUG' %}<strong>{% endif %}{{l.1}}: {{l.3}}{% if l.0 != 'DEBUG' %}</strong>{% endif %}
+          </li>
         {% endfor %}
         </ul>
+
 {%endblock%}
 
 {%block script%}

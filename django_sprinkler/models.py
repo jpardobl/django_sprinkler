@@ -103,7 +103,7 @@ class Sprinkler(models.Model):
                     "sprinkler_%s" % self.did,
                     "switch",
                     self.api_host,
-                    API_USERNAME,
+                    settings.API_USERNAME,
                     API_PASSWORD)
 
         except RestApiException as er:
@@ -200,18 +200,22 @@ class Program(models.Model):
             #Use program starting time to check active steps
             for start in self.starting_times.all():
                 start.time = start.time.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
-                logger_watering.debug("promgram promgramed start: %s" % start.time)
+                logger_watering.debug("promram programed start: %s" % start.time)
+                program_start = now.replace(hour=start.time.hour).replace(minute=start.time.minute).replace(second=0)
+                if program_start > now:
+                    logger_watering.debug("program_start > now, not using this start_time")
+                    continue
                 #Is program supposed to be run today?
                 if not start.week_day in (None, ""):
                     logger_watering.debug("Weekday not is None")
                     days = [x.strip() for x in start.week_day.split(",")]
                     logger_watering.debug("Days: %s, %s" % (days, now.strftime("%a")))
                     if len(days) and not now.strftime("%a") in days:
-                        logger.debug("No watering for today")
+                        logger.debug("No watering for today with this start_time")
                         continue
+
                # program_start = now
                # logger.debug("program_start: %s" % program_start)
-                program_start = now.replace(hour=start.time.hour).replace(minute=start.time.minute).replace(second=0)
 
            #     logger.debug("program_start: %s" % program_start)
             #    program_start += timedelta(hours=start.time.hour, minutes=start.time.minute)
@@ -247,8 +251,7 @@ class Program(models.Model):
             #logger.info("%s < %s < %s ???" % (program_start.tzinfo, now.tzinfo, step_end.tzinfo))
 
             if settings.DEBUG:
-                if program_start < now:
-                    logger_watering.debug("program_start < now")
+
                 if now < step_end:
                     logger_watering.debug("now < step_end")
 
