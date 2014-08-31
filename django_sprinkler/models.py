@@ -211,10 +211,11 @@ class Program(models.Model):
         ctxt.state = 'automatic' if old_state in ('running_program', 'automatic') else 'manual'
         if old_state != ctxt.state:
             logger_watering.info("Changing state to %s" % ctxt.state)
-
+        logger.debug("Program %s stopped" % self.name)
         ctxt.start_at = None
         ctxt.save()
-        logger.info("Program %s stopped" % self.name)
+        logger.debug("State changed")
+
 
     def has_active_step(self, program_must_start_at=None, minutes=None):
         now = datetime.now(pytz.timezone(settings.TIME_ZONE))
@@ -236,14 +237,6 @@ class Program(models.Model):
                     if len(days) and not now.strftime("%a") in days:
                         logger.debug("No watering for today with this start_time")
                         continue
-
-               # program_start = now
-               # logger.debug("program_start: %s" % program_start)
-
-           #     logger.debug("program_start: %s" % program_start)
-            #    program_start += timedelta(hours=start.time.hour, minutes=start.time.minute)
-           #     logger.debug("program_start: %s after adding: %s hours" % (program_start, start.time.hour))
-           #     program_start += timedelta(minutes=start.time.minute)
                 logger_watering.debug("program_start: %s" % program_start)
 
                 return self.active_step(
@@ -252,8 +245,6 @@ class Program(models.Model):
         else:
             #Use passed program_start to calculate active_steps
             return self.active_step(program_must_start_at, minutes)
-        logging.debug("NO STEP FOUND 111111")
-        return None
 
     def active_step(self, program_start, minutes):
         c = Context.objects.get_context()

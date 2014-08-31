@@ -4,7 +4,9 @@
         <ul class="list-unstyled">
         {% for l in log %}
           <li class="text-{% if l.4 %}info{% else %}warning{% endif %}">
-                {% if l.0 != 'DEBUG' %}<strong>{% endif %}{{l.1}}: {{l.3}}{% if l.0 != 'DEBUG' %}</strong>{% endif %}
+              {% if l.0 != 'DEBUG' %}<strong>{% endif %}
+               {{l.1}}: {{l.3}}
+              {% if l.0 != 'DEBUG' %}</strong>{% endif %}
           </li>
         {% endfor %}
         </ul>
