@@ -211,10 +211,10 @@ class Program(models.Model):
         ctxt.state = 'automatic' if old_state in ('running_program', 'automatic') else 'manual'
         if old_state != ctxt.state:
             logger_watering.info("Changing state to %s" % ctxt.state)
-        logger.debug("Program %s stopped" % self.name)
+
         ctxt.start_at = None
         ctxt.save()
-        logger.debug("State changed")
+        logger_watering.info("Program %s stopped" % self.name)
 
 
     def has_active_step(self, program_must_start_at=None, minutes=None):
@@ -277,7 +277,7 @@ class Program(models.Model):
 
         #unset the Context.program_start as the program has no steps left
         self.stop(c)
-        logger_watering.debug("NO STEP FOUND     22222222222")
+        logger_watering.debug("NO STEP FOUND")
         return None
 
 
