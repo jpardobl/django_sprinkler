@@ -10,11 +10,10 @@ logger_watering = logging.getLogger("watering")
 logger_watering.setLevel(logger.level)
 
 
-
-
 def exec_step(ctxt, step=None):
     if ctxt.state == "manual":
         logger.info("State is manual, thus not acting")
+        return
 
     for pstep in ctxt.active_program.steps.all():
         if step == pstep:
