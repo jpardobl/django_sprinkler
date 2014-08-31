@@ -26,29 +26,31 @@ def exec_step(ctxt, step=None):
 
 
 def run():
+
     ctxt = Context.objects.get_context()
     program = ctxt.active_program
 
     #check state
+    try:
+        if ctxt.state == 'manual':
+            next_step = None
 
-    if ctxt.state == 'manual':
-        next_step = None
+        elif ctxt.state in ('automatic', 'running_program'):
+            next_step = program.has_active_step()
 
-    elif ctxt.state in ('automatic', 'running_program'):
-        next_step = program.has_active_step()
+        elif ctxt.state == '3min_cicle':
+            startt = datetime.now(pytz.timezone(settings.TIME_ZONE)) \
+                if ctxt.start_at is None \
+                else ctxt.start_at
+            next_step = program.has_active_step(program_must_start_at=startt, minutes=3)
 
-    elif ctxt.state == '3min_cicle':
-        startt = datetime.now(pytz.timezone(settings.TIME_ZONE)) \
-            if ctxt.start_at is None \
-            else ctxt.start_at
-        next_step = program.has_active_step(program_must_start_at=startt, minutes=3)
+        elif ctxt.state == 'cicle':
+            startt = datetime.now(pytz.timezone(settings.TIME_ZONE)) \
+                if ctxt.start_at is None \
+                else ctxt.start_at
+            next_step = program.has_active_step(program_must_start_at=startt)
 
-    elif ctxt.state == 'cicle':
-        startt = datetime.now(pytz.timezone(settings.TIME_ZONE)) \
-            if ctxt.start_at is None \
-            else ctxt.start_at
-        next_step = program.has_active_step(program_must_start_at=startt)
-
-    exec_step(ctxt, next_step)
-
+        exec_step(ctxt, next_step)
+    except Program.ProgramMustJumpException as ex:
+        return
 

@@ -169,6 +169,9 @@ class Program(models.Model):
     steps = models.ManyToManyField(ProgramStep, null=True, blank=True)
     starting_times = models.ManyToManyField(StartTime)
 
+    class ProgramMustJumpException(Exception):
+        pass
+
     def save(self):
 
         try:
@@ -196,6 +199,15 @@ class Program(models.Model):
         }
 
     def start(self, program_start_time, ctxt=None):
+        if ctxt is None:
+            ctxt = Context.objects.get_context()
+        if ctxt.jump:
+            ctxt.jump -= 1
+            ctxt.save()
+            logger_watering.info("Not starting program because it must be jumped")
+            logger.debug("Jumps left: %s" % ctxt.jump)
+            raise Program.ProgramMustJumpException()
+
         ctxt.start_at = program_start_time
         if ctxt.state == "automatic":
             logger_watering.info("Changing state Automatic -> running_program")
