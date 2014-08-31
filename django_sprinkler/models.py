@@ -252,7 +252,7 @@ class Program(models.Model):
         else:
             #Use passed program_start to calculate active_steps
             return self.active_step(program_must_start_at, minutes)
-        logging.debug("NO STEP FOUND")
+        logging.debug("NO STEP FOUND 111111")
         return None
 
     def active_step(self, program_start, minutes):
@@ -286,7 +286,7 @@ class Program(models.Model):
 
         #unset the Context.program_start as the program has no steps left
         self.stop(c)
-        logger_watering.debug("NO STEP FOUND")
+        logger_watering.debug("NO STEP FOUND     22222222222")
         return None
 
 
