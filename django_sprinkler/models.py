@@ -209,12 +209,13 @@ class Program(models.Model):
 
         old_state = ctxt.state
         ctxt.state = 'automatic' if old_state in ('running_program', 'automatic') else 'manual'
-        if old_state != ctxt.state:
-            logger_watering.info("Changing state to %s" % ctxt.state)
-
         ctxt.start_at = None
         ctxt.save()
-        logger_watering.info("Program %s stopped" % self.name)
+        if old_state != ctxt.state:
+            logger_watering.info("Changing state to %s" % ctxt.state)
+            logger_watering.info("Program %s stopped" % self.name)
+
+
 
 
     def has_active_step(self, program_must_start_at=None, minutes=None):
