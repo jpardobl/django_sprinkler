@@ -73,7 +73,7 @@ class Context(models.Model):
             "valves": valves,
             "simulation": self.simulation,
             "programs": [p.to_dict() for p in Program.objects.all()],
-            "jump": self.jump(),
+            "jump": self.jump,
         })
 
 
