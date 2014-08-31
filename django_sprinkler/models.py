@@ -204,8 +204,8 @@ class Program(models.Model):
         if ctxt.jump:
             ctxt.jump -= 1
             ctxt.save()
-            logger_watering.info("Not starting program because it must be jumped")
-            logger.debug("Jumps left: %s" % ctxt.jump)
+            logger_watering.info("Not taking any action because current program must be jumped")
+            logger.debug("Doing jump: %s" % ctxt.jump)
             raise Program.ProgramMustJumpException()
 
         ctxt.start_at = program_start_time
@@ -218,7 +218,10 @@ class Program(models.Model):
     def stop(self, ctxt=None):
         if ctxt is None:
             ctxt = Context.objects.get_context()
-
+        if ctxt.jump:
+            ctxt.jump -= 1
+            ctxt.save()
+            logger_watering.debug("Program was jumped, jumps left: %s" % ctxt.jump)
         old_state = ctxt.state
         ctxt.state = 'automatic' if old_state in ('running_program', 'automatic') else 'manual'
         ctxt.start_at = None
