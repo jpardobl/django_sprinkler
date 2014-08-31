@@ -57,6 +57,7 @@ class Context(models.Model):
     active_program = models.ForeignKey("Program", null=True, blank=True)
     start_at = models.DateTimeField(null=True, blank=True)
     simulation = models.BooleanField(default=True)
+    jump = models.IntegerField() #number of programed cicle it has to ignore/jump
 
     def to_json(self):
         if self.active_program is None:
@@ -193,6 +194,27 @@ class Program(models.Model):
             "name": u"%s" % self,
         }
 
+    def start(self, program_start_time, ctxt=None):
+        ctxt.start_at = program_start_time
+        if ctxt.state == "automatic":
+            logger_watering.info("Changing state Automatic -> running_program")
+            ctxt.state = "running_program"
+        ctxt.save()
+        logger.info("Program %s started" % self.name)
+
+    def stop(self, ctxt=None):
+        if ctxt is None:
+            ctxt = Context.objects.get_context()
+
+        old_state = ctxt.state
+        ctxt.state = 'automatic' if old_state in ('running_program', 'automatic') else 'manual'
+        if old_state != ctxt.state:
+            logger_watering.info("Changing state to %s" % ctxt.state)
+
+        ctxt.start_at = None
+        ctxt.save()
+        logger.info("Program %s stopped" % self.name)
+
     def has_active_step(self, program_must_start_at=None, minutes=None):
         now = datetime.now(pytz.timezone(settings.TIME_ZONE))
         logger_watering.debug("program_must_start_at: %s; minutes: %s" %(program_must_start_at, minutes))
@@ -233,8 +255,6 @@ class Program(models.Model):
         return None
 
     def active_step(self, program_start, minutes):
-
-
         c = Context.objects.get_context()
 
         now = datetime.now(pytz.timezone(settings.TIME_ZONE))
@@ -256,20 +276,15 @@ class Program(models.Model):
                     logger_watering.debug("now < step_end")
 
             if program_start < now < step_end:
-                #if Context.program_start is None means this is the first
-                #step of the program, need to initialize the program_start time
                 if c.start_at is None:
-                    c.start_at = program_start
-                    if c.state == "automatic":
-                        logger_watering.info("Changing state Automatic -> running_program")
-                        c.state = "running_program"
-                    c.save()
-                logger_watering.debug("FOUND: %s (type: %s)" % (step, type(step)))
+                    #if Context.start_at is None and step is not None, means this is the first
+                    #step of the program, need to initialize the program_start time
+                    self.start(program_start, c)
+                logger_watering.debug("FOUND step: %s" % step)
                 return step
-        #unset the Context.program_start as the program has no step left
 
-        c.start_at = None
-        c.save()
+        #unset the Context.program_start as the program has no steps left
+        self.stop(c)
         logger_watering.debug("NO STEP FOUND")
         return None
 
