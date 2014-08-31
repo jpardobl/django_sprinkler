@@ -202,8 +202,6 @@ class Program(models.Model):
         if ctxt is None:
             ctxt = Context.objects.get_context()
         if ctxt.jump:
-            ctxt.jump -= 1
-            ctxt.save()
             logger_watering.info("Not taking any action because current program must be jumped")
             logger.debug("Doing jump: %s" % ctxt.jump)
             raise Program.ProgramMustJumpException()
