@@ -201,7 +201,7 @@ class Program(models.Model):
             logger_watering.info("Changing state Automatic -> running_program")
             ctxt.state = "running_program"
         ctxt.save()
-        logger.info("Program %s started" % self.name)
+        logger_watering.info("Program %s started" % self.name)
 
     def stop(self, ctxt=None):
         if ctxt is None:
