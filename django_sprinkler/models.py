@@ -57,7 +57,7 @@ class Context(models.Model):
     active_program = models.ForeignKey("Program", null=True, blank=True)
     start_at = models.DateTimeField(null=True, blank=True)
     simulation = models.BooleanField(default=True)
-    jump = models.IntegerField() #number of programed cicle it has to ignore/jump
+    jump = models.IntegerField(default=0) #number of programed cicle it has to ignore/jump
 
     def to_json(self):
         if self.active_program is None:
@@ -73,6 +73,7 @@ class Context(models.Model):
             "valves": valves,
             "simulation": self.simulation,
             "programs": [p.to_dict() for p in Program.objects.all()],
+            "jump": self.jump(),
         })
 
 

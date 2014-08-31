@@ -856,7 +856,7 @@ class TestSprinklers(unittest.TestCase):
             "Not properly calculating active step.\
             Should return None as program is started 60min ago and only lasts for 30min")
 
-    def test_manage_sprinkler(self):
+    def off_test_manage_sprinkler(self):
         [x.delete() for x in Sprinkler.objects.all()]
         Sprinkler(caption="cesped", did=1).save()
 
