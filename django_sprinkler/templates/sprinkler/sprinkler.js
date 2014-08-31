@@ -11,6 +11,10 @@ function show_context(ctxt){
         $("#simulation").html("Simulation: " + ctxt.simulation)
     else
         $("#simulation").remove()
+    if(ctxt.jump > 0)
+        $("#jump").html("Jump next " + ctxt.jump + " cicles")
+    else
+        $("#jump").html("")
     load_programs(ctxt)
     load_valves(ctxt)
     toggle_buttons(ctxt)

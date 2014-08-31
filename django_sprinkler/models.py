@@ -203,7 +203,7 @@ class Program(models.Model):
             ctxt = Context.objects.get_context()
         if ctxt.jump:
             logger_watering.info("Not taking any action because current program must be jumped")
-            logger.debug("Doing jump: %s" % ctxt.jump)
+            logger_watering.debug("Doing jump: %s" % ctxt.jump)
             raise Program.ProgramMustJumpException()
 
         ctxt.start_at = program_start_time
